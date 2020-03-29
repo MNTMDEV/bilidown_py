@@ -52,15 +52,15 @@ b站源视频下载轻量级，这将是第一个README比程序更有用、展�
 
 直接调成flash播放器，1080画质
 
-![图片](https://raw.githubusercontent.com/MNTMDEV/bilidown_lite/master/pic/1.png)
+![图片](https://raw.githubusercontent.com/MNTMDEV/bilidown_py/master/pic/1.png)
 
 开调试，刷新网页抓包
 
-![图片](https://raw.githubusercontent.com/MNTMDEV/bilidown_lite/master/pic/2.png)
+![图片](https://raw.githubusercontent.com/MNTMDEV/bilidown_py/master/pic/2.png)
 
 py程序的参数
 
-![图片](https://raw.githubusercontent.com/MNTMDEV/bilidown_lite/master/pic/3.png)
+![图片](https://raw.githubusercontent.com/MNTMDEV/bilidown_py/master/pic/3.png)
 
 ## 新增的bypass_480.py
 
