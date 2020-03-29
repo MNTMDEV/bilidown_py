@@ -1,6 +1,6 @@
-# bilidown_lite
+# bilidown_py
 
-b站源视频下载轻量级，这将是第一个README比程序更有用、展示思想而非代码的项目。(orz)
+b站源视频下载轻量级python版，这将是第一个README比程序更有用、展示思想而非代码的项目。(orz)
 
 你还在苦恼b站视频素材下不了吗？你还在抱怨bilibilijj不好使吗？
 
