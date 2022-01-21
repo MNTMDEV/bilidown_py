@@ -1,4 +1,3 @@
-from cmath import log
 import threading
 import requests
 down_mutex = threading.Lock()
@@ -6,12 +5,16 @@ down_mutex = threading.Lock()
 FDOWN_MAX_TRIAL = 5
 
 
-def down_thread(url, headers, f, start, end):
+def thread_output(tid, content):
+    print("Thread[%d] %s" % (tid, content))
+
+
+def down_thread(tid, url, headers, f, start, end):
+    thread_output(
+        tid, "[Info] Worker thread started,range %d-%d Byte." % (start, end))
     pos = start
-    if(start >= end):
-        return
     trial = 0
-    while trial < FDOWN_MAX_TRIAL:
+    while trial < FDOWN_MAX_TRIAL and pos <= end:
         headers['Range'] = 'bytes='+str(pos)+"-"+str(end)
         try:
             req = requests.get(url, headers=headers, stream=True)
@@ -28,7 +31,12 @@ def down_thread(url, headers, f, start, end):
             break
         except:
             trial += 1
-            print("Network error.Retring %d time(s)..." % (trial))
+            thread_output(
+                tid, "[Info] Network error.Retring %d time(s)" % (trial))
+    if(pos <= end):
+        thread_output(
+            tid, "[Warning] Max trial limit exceed.A part of bytes unable to download.")
+    thread_output(tid, "[Info] Thread terminated.")
 
 
 def down_len(url, headers):
@@ -48,8 +56,8 @@ def fdown(url, headers, f, n_thread, len):
         if(end > len):
             end = len
         end -= 1
-        th = threading.Thread(target=down_thread, args=(
-            url, headers.copy(), f, start, end))
+        th = threading.Thread(target=down_thread, args=(i,
+                                                        url, headers.copy(), f, start, end))
         th.start()
         threads.append(th)
     for th in threads:

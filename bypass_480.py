@@ -1,7 +1,6 @@
 import requests
 import re
 import json
-import threading
 import fastdown
 
 NUM_THREADS=20
