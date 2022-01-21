@@ -31,7 +31,7 @@ b站源视频下载轻量级python版，这将是第一个README比程序更有�
 - 打开这个py程序，粘贴URL，回车
 - 复制浏览器地址栏中视频的地址
 - 在py程序中粘贴Referer值，回车
-- 它会生成一个1.tmp的文件，改成.flv格式的，如果你不喜欢flv格式的，可以使用ffmpeg -i 1.flv 1.mp4这样的命令转格式(前提你有ffmpeg)
+- 它会生成一个xxx.flv的文件，如果你不喜欢flv格式的，可以使用ffmpeg -i 1.flv 1.mp4这样的命令转格式(前提你有ffmpeg)
 
 ## 操作步骤(H5播放器)
 
