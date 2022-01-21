@@ -19,7 +19,7 @@ b站源视频下载轻量级python版，这将是第一个README比程序更有�
 ## 本项目不足
 
 - 不到20行代码，这意味这什么呢？当然是手动为重，程序为辅了。
-- 对非专业人员不友好。(不过来看代码的基本功都不会我信你个鬼啊)
+- 对非专业人员不友好。(非专业人员可以使用[bilidown_lite](https://github.com/MNTMDEV/bilidown_lite)辅助操作)
 - 没做GUI。(就两个输入，做个毛线GUI啊)
 
 ## 操作步骤(Flash播放器)
@@ -39,10 +39,11 @@ b站源视频下载轻量级python版，这将是第一个README比程序更有�
 - 打开chrome浏览器，打开bilibili视频页，使用bilibili默认的H5播放器，选择好要下载的画质
 - F12打开调试，选择Network，然后刷新网页
 - 网站刚开始会加载一堆文件，这些不用管。直接搜m4s后缀的request包，会有2个包，一个是音频一个是视频，复制它们的URL，应该是.m4s?后面跟着一堆参数的那种
+- 当然本人也提供了提取视频CDN源URL的浏览器插件，[bilidown_lite](https://github.com/MNTMDEV/bilidown_lite)
 - 打开这个py程序，粘贴URL，回车
 - 复制浏览器地址栏中视频的地址
 - 在py程序中粘贴Referer值，回车
-- 两次它都会生成1.tmp的文件，都改成.mp4格式的，然后视频音频自然你就能区分出来了，然后上ffmpeg，把视频音频全打到一个文件里
+- 两次它都会生成xxx.m4s的文件，都改成.mp4格式的，然后视频音频自然你就能区分出来了，然后上ffmpeg，把视频音频全打到一个文件里
 
 ## 演示截图(Flash播放器)
 
@@ -52,15 +53,15 @@ b站源视频下载轻量级python版，这将是第一个README比程序更有�
 
 直接调成flash播放器，1080画质
 
-![图片](https://raw.githubusercontent.com/MNTMDEV/bilidown_py/master/pic/1.png)
+![图片](pic/1.png)
 
 开调试，刷新网页抓包
 
-![图片](https://raw.githubusercontent.com/MNTMDEV/bilidown_py/master/pic/2.png)
+![图片](pic/2.png)
 
 py程序的参数
 
-![图片](https://raw.githubusercontent.com/MNTMDEV/bilidown_py/master/pic/3.png)
+![图片](pic/3.png)
 
 ## 新增的bypass_480.py
 
