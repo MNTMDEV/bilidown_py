@@ -17,7 +17,7 @@ def is_admin():
 
 def get_variables():
     py_exec_path = sys.executable
-    script_path = "%s\\bypassGUI.pyw" % (os.getcwd())
+    script_path = "%s\\bilidownGUI.pyw" % (os.getcwd())
     return (py_exec_path, script_path)
 
 
