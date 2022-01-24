@@ -14,6 +14,7 @@ b站源视频下载轻量级python版，这将是第一个README比程序更有�
 - 坠重要的~~~需要登录或者大会员的资源也能下(只要你当前的bilibili账号有权限访问，毕竟它灵活嘛)。
 
 ## bilidownGUI
+- 运行register_protocol，注册bilidown://协议。
 - 打开chrome浏览器，打开bilibili视频页，使用bilibili默认的H5播放器，选择好要下载的画质
 - 使用[bilidown_lite](https://github.com/MNTMDEV/bilidown_lite)提取资源URL。
 - 点击使用bilidownGUI下载，转到GUI客户端操作。
