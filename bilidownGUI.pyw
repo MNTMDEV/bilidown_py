@@ -1,8 +1,13 @@
 import base64
-import tkinter
-import tkinter.messagebox
+import os
 import sys
 import json
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtWebChannel import *
+from PyQt5.QtWebEngine import *
+from PyQt5.QtWebEngineWidgets import *
+from PyQt5.QtGui import *
 
 # bilidown GUI
 
@@ -18,7 +23,7 @@ def get_param():
 # base64 to json
 
 
-def parseParam(str):
+def parse_param(str):
     if not str.startswith("bilidown://"):
         return None
     str = str.replace("bilidown://", "")
@@ -30,17 +35,47 @@ def parseParam(str):
         return None
 
 
+class BilidownGUI(QObject):
+    def __init__(self, parent=None):
+        QObject.__init__(self, parent)
+
+    @property
+    def param_json(self):
+        return self._param_json
+
+    @param_json.setter
+    def param_json(self, value):
+        self._param_json = value
+
+    @pyqtSlot()
+    def onDownloadClick(self):
+        pass
+
+
 def main():
-    root = tkinter.Tk()
-    root.withdraw()
+    # get parameters
     param = get_param()
-    if(param == None):
-        tkinter.messagebox.showerror("bilidownGUI", "请传入下载参数", parent=root)
-    else:
-        param_json = parseParam(param)
-        tkinter.messagebox.showinfo("bilidownGUI", "V:%s\r\n\r\nA:%s\r\n\r\nP:%s" % (
-            param_json['v'], param_json['a'], param_json['p']), parent=root)
-        # TODO display GUI
+    param_json = None
+    if param != None:
+        param_json = parse_param(param)
+    # Qt initialization
+    app = QApplication(sys.argv)
+
+    view = QWebEngineView()
+    # Window transparency settings
+    view.setWindowFlags(Qt.FramelessWindowHint)
+    view.setAttribute(Qt.WA_TranslucentBackground)
+    view.page().setBackgroundColor(Qt.transparent)
+    channel = QWebChannel()
+    obj = BilidownGUI()
+    obj.param_json = param_json
+    channel.registerObject("BilidownGUI", obj)
+    view.page().setWebChannel(channel)
+    page_path = os.path.realpath(os.path.dirname(
+        __file__)+"/assets/bilidownGUI.html")
+    view.page().load(QUrl.fromLocalFile(page_path))
+    view.show()
+    sys.exit(app.exec_())
 
 
 if __name__ == '__main__':
