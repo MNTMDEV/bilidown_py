@@ -36,6 +36,9 @@ def parse_param(str):
 
 
 class BilidownGUI(QObject):
+    sigExit = pyqtSignal()
+    sigMin = pyqtSignal()
+
     def __init__(self, parent=None):
         QObject.__init__(self, parent)
 
@@ -48,9 +51,28 @@ class BilidownGUI(QObject):
         self._param_json = value
 
     @pyqtSlot()
-    def onDownloadClick(self):
+    def onQuitClick(self):
+        self.sigExit.emit()
+
+    @pyqtSlot()
+    def onMinimizeClick(self):
+        self.sigMin.emit()
+
+    @pyqtSlot()
+    def onGetParam(self):
+        return self.param_json
+
+    @pyqtSlot()
+    def onBrowseDirectoryClick(self):
         pass
 
+    @pyqtSlot(str,str)
+    def onDownloadClick(self,url,directory):
+        pass
+
+    @pyqtSlot()
+    def onSuspendDownloadClick(self):
+        pass
 
 def main():
     # get parameters
@@ -74,6 +96,9 @@ def main():
     obj.param_json = param_json
     channel.registerObject("BilidownGUI", obj)
     view.page().setWebChannel(channel)
+    # event signal bind
+    obj.sigExit.connect(view.close)
+    obj.sigMin.connect(view.showMinimized)
     page_path = os.path.realpath(os.path.dirname(
         __file__)+"/assets/bilidownGUI.html")
     view.page().load(QUrl.fromLocalFile(page_path))

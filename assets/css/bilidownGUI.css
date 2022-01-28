@@ -40,6 +40,7 @@ body{
 }
 
 .window-ctrl .mdi{
+    cursor: pointer;
     font-size: 24px;
     color: rgb(208, 208, 208);
 }
