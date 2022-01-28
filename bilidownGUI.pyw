@@ -62,6 +62,9 @@ def main():
     app = QApplication(sys.argv)
 
     view = QWebEngineView()
+    view.resize(600, 500)
+    # set icon png
+    view.setWindowIcon(QIcon("assets/image/favicon.png"))
     # Window transparency settings
     view.setWindowFlags(Qt.FramelessWindowHint)
     view.setAttribute(Qt.WA_TranslucentBackground)

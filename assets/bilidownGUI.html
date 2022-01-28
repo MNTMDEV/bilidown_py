@@ -1,15 +1,53 @@
 <html lang="zh-CN">
-    <head>
-        <title>bilidownGUI</title>
-        <meta charset="utf-8">
-        <link rel="stylesheet" href="css/bootstrap.min.css">
-        <!-- <link rel="stylesheet" href="css/bootstrap-theme.min.css"> -->
-    </head>
-    <body style="background-color: white;">
-        Hello
-        <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
-        <script src="js/jquery.min.js"></script>
-        <script src="js/bootstrap.min.js"></script>
-        <script src="js/bilidownGUI.js"></script>
-    </body>
+
+<head>
+    <title>bilidownGUI</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/materialdesignicons.min.css">
+    <!-- <link rel="stylesheet" href="css/bootstrap-theme.min.css"> -->
+    <link rel="stylesheet" href="css/bilidownGUI.css">
+</head>
+
+<body>
+    <div class="window-out">
+        <div class="window">
+            <div class="window-head">
+                <img alt="icon" src="image/favicon.png" class="icon-img">
+                <strong class="icon-text">bilidown</strong>
+                <div class="pull-right window-ctrl">
+                    <span class="mdi mdi-window-minimize"></span>
+                    <span class="mdi mdi-window-close"></span>
+                </div>
+            </div>
+            <div class="window-body">
+                <label>下载链接</label>
+                <div class="form-group">
+                    <textarea class="ta-bilidown form-control" rows="3" placeholder="bilidown://"></textarea>
+                </div>
+                <label>路径</label>
+                <div class="form-group has-feedback">
+                    <input id="input-directory" type="text" class="form-control" placeholder="请选择下载目录">
+                    <span class="form-control-feedback mdi mdi-folder-open-outline browse-file"></span>
+                </div>
+                <label>下载进度</label>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0"
+                        aria-valuemax="100" style="width: 60%;">
+                    </div>
+                </div>
+                <div class="alert alert-info" role="alert">准备就绪。</div>
+                <div class="form-group">
+                    <button class="btn btn-primary"><span class="mdi mdi-download"></span>开始下载</button>
+                    <button class="btn btn-default pull-right"><span class="mdi mdi-exit-to-app"></span>退出</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/bilidownGUI.js"></script>
+</body>
+
 </html>
