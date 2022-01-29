@@ -23,7 +23,7 @@
             <div class="window-body">
                 <label>下载链接</label>
                 <div class="form-group">
-                    <textarea class="ta-bilidown form-control" rows="3" placeholder="bilidown://"></textarea>
+                    <textarea id="input-param" class="ta-bilidown form-control" rows="3" placeholder="bilidown://"></textarea>
                 </div>
                 <label>路径</label>
                 <div class="form-group has-feedback">
@@ -38,7 +38,9 @@
                 </div>
                 <div class="alert alert-info" role="alert">准备就绪。</div>
                 <div class="form-group">
-                    <button class="btn btn-primary"><span class="mdi mdi-download"></span>开始下载</button>
+                    <button id="btnDownload" class="btn btn-primary"><span class="mdi mdi-download"></span>开始下载</button>
+                    <button id="btnSuspend" class="btn btn-primary" style="display: none;"><span class="mdi mdi-pause"></span>暂停下载</button>
+                    <button id="btnResume" class="btn btn-primary" style="display: none;"><span class="mdi mdi-play"></span>继续下载</button>
                     <button id="btnQuit" class="btn btn-default pull-right"><span class="mdi mdi-exit-to-app"></span>退出</button>
                 </div>
             </div>

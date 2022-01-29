@@ -1,4 +1,4 @@
-import fastdown
+from fastdown import FDown
 
 NUM_THREADS = 20
 
@@ -21,10 +21,11 @@ if __name__ == '__main__':
         "Sec-Fetch-Mode": "no-cors",
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36"
     }
-    len = fastdown.down_len(url, headers)
+    len = FDown.down_len(url, headers)
     print("File length is %d Bytes" % (len))
     filename = get_m4s_filename(url)
     f = open(filename, "wb")
-    fastdown.fdown(url, headers, f, NUM_THREADS, len)
+    instance = FDown()
+    instance.download(url, headers, f, NUM_THREADS, len, None)
     f.close()
     print("Complete!")

@@ -1,7 +1,7 @@
 import requests
 import re
 import json
-import fastdown
+from fastdown import FDown
 
 NUM_THREADS=20
 
@@ -11,10 +11,11 @@ def down_flv(avu,url):
         "Sec-Fetch-Mode":"no-cors",
         "User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36"
     }
-    len=fastdown.down_len(url,headers)
+    len=FDown.down_len(url,headers)
     print("Video length is "+str(len)+" bytes")
     f = open("1.flv", "wb")
-    fastdown.fdown(url,headers,f,NUM_THREADS,len)
+    instance = FDown()
+    instance.download(url,headers,f,NUM_THREADS,len,None)
     f.close()
     print("Complete!")
 
