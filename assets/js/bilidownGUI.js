@@ -26,12 +26,15 @@ var processUIEvent = function(jsonData){
     var data = jsonData.data;
     switch(type){
         case 'progress':
-            $('#progress').css('width',data+"%")
-            $('#progress').text(data+"%")
+            $('#progress').css('width',data+"%");
+            $('#progress').text(data+"%");
             break;
         case 'info':
             $('#info').attr('class', data.style);
-            $('#info').text(data.info)
+            $('#info').text(data.info);
+            if((data.type==1)||(data.type==3)){
+                $('#btnDownload').attr('disabled',false);
+            }
             break;
     }
 }
@@ -64,6 +67,7 @@ $('.browse-file').click(function () {
 })
 
 $('#btnDownload').click(function () {
+    $('#btnDownload').attr('disabled',true);
     _backend_object.onDownloadClick($('#input-param').val(), $('#input-directory').val())
 })
 

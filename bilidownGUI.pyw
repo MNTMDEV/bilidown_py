@@ -4,6 +4,7 @@ import os
 import sys
 import json
 import re
+import time
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtWebChannel import *
@@ -91,14 +92,14 @@ class BilidownGUI(QObject):
     def notifyUI(self, json):
         self.sigUI.emit(QVariant(json))
 
-    def notifyProgress(self, perc):
+    def notifyProgress(self, perc, enforce=False):
         # decrease message cost
-        if self.procgress != perc:
+        if (self.procgress != perc) or enforce:
+            self.procgress = perc
             self.notifyUI({
                 "type": 'progress',
                 "data": perc
             })
-        self.procgress = perc
 
     def notifyInfo(self, type, info):
         styleMap = {
@@ -155,6 +156,8 @@ class BilidownGUI(QObject):
             if self.audioThreadCount == self.fdownInst.thread_count():
                 self.fAudio.close()
                 self.notifyInfo(0, "正在下载视频文件...")
+                self.notifyProgress(0, True)
+                time.sleep(0.2)
                 self.fdownInst.download(
                     self.param_json['v'], self.headers, self.fVideo, 20, self.lenVideo, False, self.videoRecvCallback)
         else:
@@ -174,6 +177,8 @@ class BilidownGUI(QObject):
             if self.videoThreadCount == self.fdownInst.thread_count():
                 self.fVideo.close()
                 self.notifyInfo(0, "文件下载完成,正在合成完整视频...")
+                self.notifyProgress(0, True)
+                time.sleep(0.2)
                 self.videoRemux()
         else:
             self.fdownInst.terminate()
@@ -189,12 +194,12 @@ class BilidownGUI(QObject):
         avcom.setOutPath(BilidownGUI.getAbsolutePath(
             self.downDirectory, self.filenameOutput))
         # event
-        avcom.setCallbackAudio(self.videoFrameCallback)
+        avcom.setCallbackAudio(self.audioFrameCallback)
         avcom.setCallbackVideo(self.videoFrameCallback)
-        # frames
-        self._audioFrame = avcom.getAudioFrame()
-        self._videoFrame = avcom.getVideoFrame()
         if avcom.OpenStream():
+            # frames
+            self._audioFrame = avcom.getAudioFrame()
+            self._videoFrame = avcom.getVideoFrame()
             if avcom.WriteToFile():
                 avcom.releaseInstance()
                 self.deleteTempM4s()
@@ -205,14 +210,17 @@ class BilidownGUI(QObject):
             self.notifyInfo(1, "视频文件合成失败,无法打开文件流。")
 
     def videoFrameCallback(self, x):
-        # notify info
+        self.notifyProgress(BilidownGUI.getPercentage(
+            x+self._audioFrame, self._videoFrame+self._audioFrame))
         if(x == self._videoFrame):
-            self.notifyInfo(3, "视频拷贝完成")
+            pass
 
     def audioFrameCallback(self, x):
-        # notify info
+        self.notifyProgress(BilidownGUI.getPercentage(
+            x, self._videoFrame+self._audioFrame))
         if(x == self._audioFrame):
-            self.notifyInfo(3, "音频拷贝完成")
+            self.notifyInfo(0, "视频拷贝完成，正在拷贝音频")
+            time.sleep(0.2)
 
     def removeFile(self, path):
         if os.path.exists(path):
@@ -227,16 +235,23 @@ class BilidownGUI(QObject):
         self.removeFile(BilidownGUI.getAbsolutePath(
             self.downDirectory, self.filenameVideo))
 
-    def executeDownload(self):
-        self.notifyInfo(0, "正在下载音频文件...")
+    @pyqtSlot()
+    def onStartDownload(self):
         self.fdownInst.download(
             self.param_json['a'], self.headers, self.fAudio, 20, self.lenAudio, False, self.audioRecvCallback)
+
+    def executeDownload(self):
+        self.notifyInfo(0, "正在下载音频文件...")
+        self.notifyProgress(0, True)
+        QTimer.singleShot(200, self.onStartDownload)
 
     def getAbsolutePath(root, filename):
         return os.path.join(root, filename)
 
     @pyqtSlot()
     def onQuitClick(self):
+        if self.fdownInst != None:
+            self.fdownInst.terminate()
         self.sigExit.emit()
 
     @pyqtSlot()
@@ -268,10 +283,8 @@ class BilidownGUI(QObject):
         self.downDirectory = directory
         self.param_json = parse_param(url)
         if self.param_json == None:
-            return{
-                "success": False,
-                "msg": "URL格式错误无法解析"
-            }
+            self.notifyInfo(1, "URL格式错误无法解析")
+            return
         self.headers = {
             "Referer": self.param_json['p'],
             "Sec-Fetch-Mode": "no-cors",

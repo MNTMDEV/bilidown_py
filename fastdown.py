@@ -10,7 +10,7 @@ class FDown:
     down_mutex = threading.Lock()
     threads = []
     callback = None
-    terminate = False
+    _terminate = False
 
     def thread_output(self, tid, content):
         print("Thread[%d] %s" % (tid, content))
@@ -25,7 +25,7 @@ class FDown:
             try:
                 req = requests.get(url, headers=headers, stream=True)
                 for chunk in req.iter_content(chunk_size=1024):
-                    if self.terminate:
+                    if self._terminate:
                         return pos > end
                     if chunk:
                         # reset trial variable
@@ -64,7 +64,7 @@ class FDown:
         return len
 
     def download(self, url, headers, f, n_thread, len, sync, callback):
-        self.terminate = False
+        self._terminate = False
         self.callback = callback
         self.threads = []
         per_th = int(len/n_thread)
@@ -100,6 +100,7 @@ class FDown:
         self.down_mutex.release()
 
     def terminate(self):
-        self.terminate = True
+        self._terminate = True
         for th in self.threads:
-            th.join()
+            if self is not threading.current_thread():
+                th.join()

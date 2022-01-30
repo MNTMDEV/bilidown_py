@@ -15,6 +15,7 @@ class AVCombine(object):
     def releaseInstance(self):
         if self._instance != None:
             self._releaseInstance(self._instance)
+            self._instance = None
         
     def __init__(self):
         try:
