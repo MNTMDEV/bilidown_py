@@ -64,7 +64,7 @@ exe2 = EXE(pyz2,
           disable_windowed_traceback=False,
           target_arch=None,
           codesign_identity=None,
-          entitlements_file=None , version='bilidownGUI_version_info.txt', icon='assets\\image\\favicon.ico')
+          entitlements_file=None , version='register_version_info.txt', icon='assets\\image\\favicon.ico')
 
 coll = COLLECT(exe,
                a.binaries,
