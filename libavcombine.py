@@ -11,7 +11,11 @@ class AVCombine(object):
         self.linkDll()
         self.initFunction()
         self._instance = self._getInstance()
-
+    
+    def releaseInstance(self):
+        if self._instance != None:
+            self._releaseInstance(self._instance)
+        
     def __init__(self):
         try:
             self.initVar()
@@ -19,8 +23,7 @@ class AVCombine(object):
             pass
 
     def __del__(self):
-        if self._instance != None:
-            self._releaseInstance(self._instance)
+        self.releaseInstance()
 
     def linkDll(self):
         rootPath = os.path.dirname(__file__)

@@ -10,6 +10,30 @@ var initEvent = function () {
     _backend_object.onGetParam(function (param) {
         $('#input-param').val(param);
     });
+    // initial directory
+    _backend_object.onGetRootDirectory(function (directory) {
+        $('#input-directory').val(directory);
+    });
+    _backend_object.sigUI.connect(function(jsonData){
+        processUIEvent(jsonData);
+    })
+}
+
+
+
+var processUIEvent = function(jsonData){
+    var type = jsonData.type;
+    var data = jsonData.data;
+    switch(type){
+        case 'progress':
+            $('#progress').css('width',data+"%")
+            $('#progress').text(data+"%")
+            break;
+        case 'info':
+            $('#info').attr('class', data.style);
+            $('#info').text(data.info)
+            break;
+    }
 }
 
 $(function () {

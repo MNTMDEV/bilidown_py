@@ -1,4 +1,5 @@
 import base64
+import math
 import os
 import sys
 import json
@@ -47,16 +48,23 @@ def get_m4s_filename(url):
         url = url[pos+1:]
     return url
 
+
 def get_video_number(filename):
-    match_obj = re.search(r'\d+',filename)
-    if match_obj!=None:
+    match_obj = re.search(r'\d+', filename)
+    if match_obj != None:
         return match_obj.group()
     else:
         return -1
 
+
+def isPySuffix():
+    return os.path.exists(os.path.join(os.path.dirname(__file__), "PY_SUFFIX"))
+
+
 class BilidownGUI(QObject):
     sigExit = pyqtSignal()
     sigMin = pyqtSignal()
+    sigUI = pyqtSignal(QVariant)
 
     def __init__(self, parent=None):
         self.parent = parent
@@ -78,6 +86,40 @@ class BilidownGUI(QObject):
         self.videoThreadCount = 0
         self._audioFrame = 0
         self._videoFrame = 0
+        self.procgress = 0
+
+    def notifyUI(self, json):
+        self.sigUI.emit(QVariant(json))
+
+    def notifyProgress(self, perc):
+        # decrease message cost
+        if self.procgress != perc:
+            self.notifyUI({
+                "type": 'progress',
+                "data": perc
+            })
+        self.procgress = perc
+
+    def notifyInfo(self, type, info):
+        styleMap = {
+            0: 'info',
+            1: 'danger',
+            2: 'warning',
+            3: 'success'
+        }
+        style = 'alert alert-%s' % (styleMap.get(type, 'default'))
+        self.notifyUI({
+            "type": 'info',
+            "data": {
+                "type": type,
+                "style": style,
+                "info": info
+            }
+        })
+
+    def getPercentage(a, b):
+        perc = float(a)/b
+        return math.floor(perc*100)
 
     @property
     def parent(self):
@@ -106,41 +148,46 @@ class BilidownGUI(QObject):
         if result == None:
             len = jsonData['len']
             self.lenAudioCurrent += len
-            # TODO notify
+            self.notifyProgress(BilidownGUI.getPercentage(
+                self.lenAudioCurrent, self.lenAudio))
         elif result == True:
             self.audioThreadCount += 1
             if self.audioThreadCount == self.fdownInst.thread_count():
                 self.fAudio.close()
-                # TODO notify success
+                self.notifyInfo(0, "正在下载视频文件...")
                 self.fdownInst.download(
                     self.param_json['v'], self.headers, self.fVideo, 20, self.lenVideo, False, self.videoRecvCallback)
         else:
             self.fdownInst.terminate()
             self.releaseFileHandler()
-            # TODO notify failure
+            self.notifyInfo(1, "音频文件下载失败")
 
     def videoRecvCallback(self, jsonData):
         result = jsonData.get('result', None)
         if result == None:
             len = jsonData['len']
             self.lenVideoCurrent += len
-            # TODO notify
+            self.notifyProgress(BilidownGUI.getPercentage(
+                self.lenVideoCurrent, self.lenVideo))
         elif result == True:
             self.videoThreadCount += 1
             if self.videoThreadCount == self.fdownInst.thread_count():
                 self.fVideo.close()
-                # TODO notify success
+                self.notifyInfo(0, "文件下载完成,正在合成完整视频...")
                 self.videoRemux()
         else:
             self.fdownInst.terminate()
             self.releaseFileHandler()
-            # TODO notify failure
+            self.notifyInfo(1, "视频文件下载失败")
 
     def videoRemux(self):
         avcom = AVCombine()
-        avcom.setAudio(self.filenameAudio)
-        avcom.setVideo(self.filenameVideo)
-        avcom.setOutPath(self.filenameOutput)
+        avcom.setAudio(BilidownGUI.getAbsolutePath(
+            self.downDirectory, self.filenameAudio))
+        avcom.setVideo(BilidownGUI.getAbsolutePath(
+            self.downDirectory, self.filenameVideo))
+        avcom.setOutPath(BilidownGUI.getAbsolutePath(
+            self.downDirectory, self.filenameOutput))
         # event
         avcom.setCallbackAudio(self.videoFrameCallback)
         avcom.setCallbackVideo(self.videoFrameCallback)
@@ -149,30 +196,44 @@ class BilidownGUI(QObject):
         self._videoFrame = avcom.getVideoFrame()
         if avcom.OpenStream():
             if avcom.WriteToFile():
-                # notify success
-                pass
+                avcom.releaseInstance()
+                self.deleteTempM4s()
+                self.notifyInfo(3, "视频合成成功")
             else:
-                #notify failure
-                pass
+                self.notifyInfo(1, "视频文件写入失败,无法写入文件。")
         else:
-            # notify failure
-            pass
+            self.notifyInfo(1, "视频文件合成失败,无法打开文件流。")
 
     def videoFrameCallback(self, x):
         # notify info
         if(x == self._videoFrame):
-            #finish
-            pass
+            self.notifyInfo(3, "视频拷贝完成")
 
     def audioFrameCallback(self, x):
         # notify info
         if(x == self._audioFrame):
-            #finish
-            pass
+            self.notifyInfo(3, "音频拷贝完成")
+
+    def removeFile(self, path):
+        if os.path.exists(path):
+            try:
+                os.remove(path)
+            except:
+                pass
+
+    def deleteTempM4s(self):
+        self.removeFile(BilidownGUI.getAbsolutePath(
+            self.downDirectory, self.filenameAudio))
+        self.removeFile(BilidownGUI.getAbsolutePath(
+            self.downDirectory, self.filenameVideo))
 
     def executeDownload(self):
+        self.notifyInfo(0, "正在下载音频文件...")
         self.fdownInst.download(
             self.param_json['a'], self.headers, self.fAudio, 20, self.lenAudio, False, self.audioRecvCallback)
+
+    def getAbsolutePath(root, filename):
+        return os.path.join(root, filename)
 
     @pyqtSlot()
     def onQuitClick(self):
@@ -186,9 +247,20 @@ class BilidownGUI(QObject):
     def onGetParam(self):
         return self.param
 
+    def getRootDirectory():
+        if isPySuffix():
+            return os.path.dirname(__file__)
+        else:
+            return os.path.dirname(sys.executable)
+
+    @pyqtSlot(result=str)
+    def onGetRootDirectory(self):
+        return BilidownGUI.getRootDirectory()
+
     @pyqtSlot(result=str)
     def onBrowseDirectoryClick(self):
-        directory = QFileDialog.getExistingDirectory(self._parent, "选择视频存放路径")
+        directory = QFileDialog.getExistingDirectory(
+            self._parent, "选择视频存放路径", BilidownGUI.getRootDirectory())
         return directory
 
     @pyqtSlot(str, str)
@@ -214,8 +286,10 @@ class BilidownGUI(QObject):
         self.filenameVideo = get_m4s_filename(self.param_json['v'])
         self.filenameOutput = "%s.mp4" % (get_video_number(self.filenameAudio))
 
-        self.fAudio = open(self.filenameAudio, "wb")
-        self.fVideo = open(self.filenameVideo, "wb")
+        self.fAudio = open(BilidownGUI.getAbsolutePath(
+            self.downDirectory, self.filenameAudio), "wb")
+        self.fVideo = open(BilidownGUI.getAbsolutePath(
+            self.downDirectory, self.filenameVideo), "wb")
         # execute download
         self.executeDownload()
 
@@ -237,7 +311,8 @@ def main():
     view = QWebEngineView()
     view.resize(600, 500)
     # set icon png
-    view.setWindowIcon(QIcon("assets/image/favicon.png"))
+    view.setWindowIcon(QIcon(os.path.realpath(
+        os.path.dirname(__file__) + "/assets/image/favicon.png")))
     # Window transparency settings
     view.setWindowFlags(Qt.FramelessWindowHint)
     view.setAttribute(Qt.WA_TranslucentBackground)
@@ -251,7 +326,7 @@ def main():
     obj.sigExit.connect(view.close)
     obj.sigMin.connect(view.showMinimized)
     page_path = os.path.realpath(os.path.dirname(
-        __file__)+"/assets/bilidownGUI.html")
+        __file__) + "/assets/bilidownGUI.html")
     view.page().load(QUrl.fromLocalFile(page_path))
     view.show()
     sys.exit(app.exec_())

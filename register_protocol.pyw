@@ -14,10 +14,17 @@ def is_admin():
     except:
         return False
 
+def isPySuffix():
+    return os.path.exists(os.path.join(os.path.dirname(__file__),"PY_SUFFIX"))
 
 def get_variables():
-    py_exec_path = sys.executable
-    script_path = "%s\\bilidownGUI.pyw" % (os.getcwd())
+    py_exec_path = ""
+    script_path = ""
+    if isPySuffix():
+        py_exec_path = sys.executable
+        script_path = os.path.join(os.path.dirname(__file__),"bilidownGUI.pyw")
+    else:
+        py_exec_path = os.path.join(os.path.dirname(sys.executable),"bilidownGUI.exe")
     return (py_exec_path, script_path)
 
 
@@ -62,7 +69,12 @@ def register_protocol():
         winreg.SetValue(bilidown_key, "", winreg.REG_SZ, "BilidownProtocol")
         winreg.SetValueEx(bilidown_key, "URL Protocol", 0, winreg.REG_SZ, "")
         winreg.SetValue(default_icon_key, "", winreg.REG_SZ, vars[0])
-        command_value = '%s "%s" "%%1"' % (vars[0], vars[1])
+        command_constant = ""
+        if isPySuffix():
+            command_constant = '%s "%s"' % (vars[0],vars[1])
+        else:
+            command_constant = vars[0]
+        command_value = '%s "%%1"' % (command_constant)
         winreg.SetValue(command_key, "", winreg.REG_SZ, command_value)
         ret = True
     except:
@@ -150,5 +162,9 @@ if __name__ == '__main__':
     if is_admin():
         main()
     else:
+        # exe or py
+        param = ""
+        if isPySuffix():
+            param = __file__
         ctypes.windll.shell32.ShellExecuteW(
-            None, "runas", sys.executable, __file__, None, 1)
+            None, "runas", sys.executable, param, None, 1)
