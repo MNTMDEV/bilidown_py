@@ -83,9 +83,6 @@ class FDown:
         if sync:
             for th in self.threads:
                 th.join()
-                result = th.get_result()
-                if not result:
-                    return False
             return True
         else:
             return True

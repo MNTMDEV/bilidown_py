@@ -8,14 +8,14 @@ NUM_THREADS=20
 def down_flv(avu,url):
     headers={
         "Referer": avu,
-        "Sec-Fetch-Mode":"no-cors",
-        "User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36"
+        "Sec-Fetch-Mode": "no-cors",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36"
     }
     len=FDown.down_len(url,headers)
     print("Video length is "+str(len)+" bytes")
     f = open("1.flv", "wb")
     instance = FDown()
-    instance.download(url,headers,f,NUM_THREADS,len,None)
+    instance.download(url, headers, f, NUM_THREADS, len, True, None)
     f.close()
     print("Complete!")
 
@@ -51,15 +51,16 @@ def proc_request(avu,aid,flag):
     url=urlText['data']['durl'][0]['url']
     down_flv(avu,url)
 
-url=input("URL:")
-ret=re.match("https://www.bilibili.com/video/av(\\d+)",url)
-if(not ret):
-    ret=re.match("https://www.bilibili.com/video/BV([0-9a-zA-Z]+)",url)
+if __name__ == '__main__':
+    url=input("URL:")
+    ret=re.match("https://www.bilibili.com/video/av(\\d+)",url)
     if(not ret):
-        print("Invalid bilibili video url")
+        ret=re.match("https://www.bilibili.com/video/BV([0-9a-zA-Z]+)",url)
+        if(not ret):
+            print("Invalid bilibili video url")
+        else:
+            bid=ret.group(1)
+            proc_request(url,bid,1)
     else:
-        bid=ret.group(1)
-        proc_request(url,bid,1)
-else:
-    aid=ret.group(1)
-    proc_request(url,aid,0)
+        aid=ret.group(1)
+        proc_request(url,aid,0)

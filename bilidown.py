@@ -26,6 +26,6 @@ if __name__ == '__main__':
     filename = get_m4s_filename(url)
     f = open(filename, "wb")
     instance = FDown()
-    instance.download(url, headers, f, NUM_THREADS, len, None)
+    instance.download(url, headers, f, NUM_THREADS, len, True, None)
     f.close()
     print("Complete!")
