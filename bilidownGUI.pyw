@@ -1,9 +1,5 @@
-import base64
 import os
 import sys
-import json
-import re
-from typing import overload
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtWebChannel import *

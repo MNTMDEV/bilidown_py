@@ -17,6 +17,8 @@ from libavcombine import AVCombine
 # bilidown GUI
 
 # base64 to json
+
+
 def parse_param(str):
     if not str.startswith("bilidown://total/"):
         return None
@@ -47,8 +49,11 @@ def get_video_number(filename):
         return -1
 
 # .exe or .py
+
+
 def isPySuffix():
     return os.path.exists(os.path.join(os.path.dirname(__file__), "PY_SUFFIX"))
+
 
 class BilidownObj(QObject):
     sigExit = pyqtSignal()

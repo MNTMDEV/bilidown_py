@@ -1,6 +1,4 @@
-from gc import callbacks
 import threading
-from unittest import result
 import requests
 
 FDOWN_MAX_TRIAL = 5
@@ -99,5 +97,5 @@ class FDown:
     def terminate(self):
         self._terminate = True
         for th in self.threads:
-            if self is not threading.current_thread():
+            if th is not threading.current_thread():
                 th.join()
