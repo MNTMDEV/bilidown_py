@@ -39,10 +39,12 @@ class FDown:
             cur_end = pos+VIDEO_PART_UNIT-1
             if(cur_end > end):
                 cur_end = end
-
             headers['Range'] = 'bytes='+str(pos)+"-"+str(cur_end)
             try:
-                req = requests.get(url, headers=headers, stream=True)
+                if self._terminate:
+                    break
+                req = requests.get(url, headers=headers,
+                                   stream=True, timeout=5)
                 total_fetch = 0
                 cur_pos = pos
                 for chunk in req.iter_content(chunk_size=DOWN_CHUNK_SIZE):
@@ -142,7 +144,7 @@ class FDown:
     def resume(self):
         self.down_mutex.release()
 
-    def terminate(self,sync=False):
+    def terminate(self, sync=False):
         self._terminate = True
         if sync:
             for th in self.threads:

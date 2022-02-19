@@ -251,10 +251,14 @@ class BilidownObj(QObject):
         return os.path.join(root, filename)
 
     @pyqtSlot()
-    def onQuitClick(self):
+    def onTryQuit(self):
         if self.fdownInst != None:
-            self.fdownInst.terminate()
+            self.fdownInst.terminate(True)
         self.sigExit.emit()
+
+    @pyqtSlot()
+    def onQuitClick(self):
+        QTimer.singleShot(1, self.onTryQuit)
 
     @pyqtSlot()
     def onMinimizeClick(self):
