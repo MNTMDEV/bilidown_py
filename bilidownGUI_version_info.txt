@@ -6,8 +6,8 @@ VSVersionInfo(
   ffi=FixedFileInfo(
     # filevers and prodvers should be always a tuple with four items: (1, 2, 3, 4)
     # Set not needed items to zero 0.
-    filevers=(2, 1, 1, 1),
-    prodvers=(2, 1, 1, 1),
+    filevers=(2, 2, 1, 1),
+    prodvers=(2, 2, 1, 1),
     # Contains a bitmask that specifies the valid bits 'flags'r
     mask=0x3f,
     # Contains a bitmask that specifies the Boolean attributes of the file.
@@ -31,12 +31,12 @@ VSVersionInfo(
         '040904B0',
         [StringStruct('CompanyName', 'MNTMDEV'),
         StringStruct('FileDescription', 'Bilibili Downloader GUI'),
-        StringStruct('FileVersion', '2.1.1.1'),
+        StringStruct('FileVersion', '2.2.1.1'),
         StringStruct('InternalName', 'bilidownGUI'),
         StringStruct('LegalCopyright', '© MNTMDEV.'),
         StringStruct('OriginalFilename', 'bilidownGUI.exe'),
         StringStruct('ProductName', 'Bilibili Downloader GUI'),
-        StringStruct('ProductVersion', '2.1.1.1')])
+        StringStruct('ProductVersion', '2.2.1.1')])
       ]), 
     VarFileInfo([VarStruct('Translation', [2052, 1200])])
   ]
