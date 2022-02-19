@@ -1,3 +1,5 @@
 __pycache__
 build
 dist
+downloads/*.mp4
+downloads/*.m4s

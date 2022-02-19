@@ -142,8 +142,9 @@ class FDown:
     def resume(self):
         self.down_mutex.release()
 
-    def terminate(self):
+    def terminate(self,sync=False):
         self._terminate = True
-        for th in self.threads:
-            if th is not threading.current_thread():
-                th.join()
+        if sync:
+            for th in self.threads:
+                if th is not threading.current_thread():
+                    th.join()

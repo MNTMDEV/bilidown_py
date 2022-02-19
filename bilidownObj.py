@@ -82,6 +82,8 @@ class BilidownObj(QObject):
         self._audioFrame = 0
         self._videoFrame = 0
         self.procgress = 0
+        self.audioResult=True
+        self.videoResult=True
 
     def notifyUI(self, json):
         self.sigUI.emit(QVariant(json))
@@ -145,19 +147,22 @@ class BilidownObj(QObject):
             self.lenAudioCurrent += len
             self.notifyProgress(BilidownObj.getPercentage(
                 self.lenAudioCurrent, self.lenAudio))
-        elif result == True:
-            self.audioThreadCount += 1
-            if self.audioThreadCount == self.fdownInst.thread_count():
-                self.fAudio.close()
-                self.notifyInfo(0, "正在下载视频文件...")
-                self.notifyProgress(0, True)
-                time.sleep(0.2)
-                self.fdownInst.download(
-                    self.param_json['v'], self.headers, self.fVideo, 10, self.lenVideo, False, self.videoRecvCallback)
         else:
-            self.fdownInst.terminate()
-            self.releaseFileHandler()
-            self.notifyInfo(1, "音频文件下载失败")
+            self.audioThreadCount += 1
+            self.audioResult = self.audioResult and result
+            if not result:
+                self.fdownInst.terminate()
+            if self.audioThreadCount == self.fdownInst.thread_count():
+                if self.audioResult:
+                    self.fAudio.close()
+                    self.notifyInfo(0, "正在下载视频文件...")
+                    self.notifyProgress(0, True)
+                    time.sleep(0.2)
+                    self.fdownInst.download(
+                        self.param_json['v'], self.headers, self.fVideo, 10, self.lenVideo, False, self.videoRecvCallback)
+                else:
+                    self.releaseFileHandler()
+                    self.notifyInfo(1, "音频文件下载失败")
 
     def videoRecvCallback(self, jsonData):
         result = jsonData.get('result', None)
@@ -166,18 +171,21 @@ class BilidownObj(QObject):
             self.lenVideoCurrent += len
             self.notifyProgress(BilidownObj.getPercentage(
                 self.lenVideoCurrent, self.lenVideo))
-        elif result == True:
-            self.videoThreadCount += 1
-            if self.videoThreadCount == self.fdownInst.thread_count():
-                self.fVideo.close()
-                self.notifyInfo(0, "文件下载完成,正在合成完整视频...")
-                self.notifyProgress(0, True)
-                time.sleep(0.2)
-                self.videoRemux()
         else:
-            self.fdownInst.terminate()
-            self.releaseFileHandler()
-            self.notifyInfo(1, "视频文件下载失败")
+            self.videoThreadCount += 1
+            self.videoResult = self.videoResult and result
+            if not result:
+                self.fdownInst.terminate()
+            if self.videoThreadCount == self.fdownInst.thread_count():
+                if self.videoResult:
+                    self.fVideo.close()
+                    self.notifyInfo(0, "文件下载完成,正在合成完整视频...")
+                    self.notifyProgress(0, True)
+                    time.sleep(0.2)
+                    self.videoRemux()
+                else:
+                    self.releaseFileHandler()
+                    self.notifyInfo(1, "视频文件下载失败")
 
     def videoRemux(self):
         avcom = AVCombine()
