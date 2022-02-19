@@ -1,8 +1,6 @@
-import base64
 import math
 import os
 import sys
-import json
 import re
 import time
 from PyQt5.QtCore import *
@@ -13,23 +11,25 @@ from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtGui import *
 from fastdown import FDown
 from libavcombine import AVCombine
+from urllib.parse import urlparse,parse_qs
 
 # bilidown GUI
-
-# base64 to json
-
 
 def parse_param(str):
     if not str.startswith("bilidown://total/"):
         return None
-    str = str.replace("bilidown://total/", "")
-    try:
-        decoded = base64.b64decode(str).decode()
-        param_json = json.loads(decoded)
-        return param_json
-    except:
-        return None
-
+    result=urlparse(str)
+    p="https://www.bilibili.com/video%s"%(result.path)
+    query=result.query
+    params=parse_qs(query)
+    a=params['a'][0]
+    v=params['v'][0]
+    param_json={
+        "a":a,
+        "v":v,
+        "p":p
+    }
+    return param_json
 
 def get_m4s_filename(url):
     pos = url.find("?")
