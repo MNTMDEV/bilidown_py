@@ -39,4 +39,3 @@ b站源视频下载轻量级python版，这将是第一个README比程序更有�
 ## TODO
 
 - [ ] URL too long
-- [ ] 网络异常情况下的死锁/同步问题

@@ -35,6 +35,7 @@ class BilidownGUI(QWebEngineView):
         self.focusProxy().installEventFilter(self)
 
     def initMousePos(self):
+        self._dragEnable = True
         self._isTrack = False
         self._startPos = None
 
@@ -47,6 +48,7 @@ class BilidownGUI(QWebEngineView):
     def initObj(self):
         param = get_param()
         self._obj = BilidownObj()
+        self._obj._view =self
         self._obj.param = param
         # event signal bind
         self._obj.sigExit.connect(self.close)
@@ -74,17 +76,17 @@ class BilidownGUI(QWebEngineView):
         return super().eventFilter(source, event)
 
     def mousePressEvent(self, e):
-        if e.button() == Qt.LeftButton:
+        if e.button() == Qt.LeftButton and self._dragEnable:
             self._isTrack = True
             self._startPos = QPoint(e.x(), e.y())
 
     def mouseReleaseEvent(self, e):
-        if e.button() == Qt.LeftButton:
+        if e.button() == Qt.LeftButton and self._dragEnable:
             self._isTrack = False
             self._startPos = None
 
     def mouseMoveEvent(self, e):
-        if self._isTrack:
+        if self._isTrack and self._dragEnable:
             deltaPos = e.pos() - self._startPos
             self.move(self.pos()+deltaPos)
 

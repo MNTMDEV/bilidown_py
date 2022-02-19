@@ -1,4 +1,4 @@
-pyinstaller bilidownGUI.spec
+pyinstaller bilidownGUI.spec -y
 mv dist/bilidownGUI/PyQt5/Qt5/bin/QtWebEngineProcess.exe dist/bilidownGUI/
 mv dist/bilidownGUI/PyQt5/Qt5/plugins/* dist/bilidownGUI/
 mv dist/bilidownGUI/PyQt5/Qt5/qml/* dist/bilidownGUI/

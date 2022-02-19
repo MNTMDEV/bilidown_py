@@ -71,6 +71,14 @@ $('#btnDownload').click(function () {
     _backend_object.onDownloadClick($('#input-param').val(), $('#input-directory').val())
 })
 
+$('input,textarea').hover(function(){
+    // disable drag
+    _backend_object.onDragStatusModify(false);
+},function(){
+    // enable drag
+    _backend_object.onDragStatusModify(true);
+})
+
 $('#btnSuspend').click(function () {
 
 })

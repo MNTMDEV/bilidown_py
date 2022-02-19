@@ -55,8 +55,11 @@ body{
     text-align: center;
 }
 
-.form-control{
+.form-control,.progress{
     opacity: 0.8;
+}
+
+.form-control{
     font-size: 20px;
 }
 

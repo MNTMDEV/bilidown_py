@@ -59,6 +59,7 @@ class BilidownObj(QObject):
     sigExit = pyqtSignal()
     sigMin = pyqtSignal()
     sigUI = pyqtSignal(QVariant)
+    _view=None
 
     def __init__(self, parent=None):
         self.parent = parent
@@ -152,7 +153,7 @@ class BilidownObj(QObject):
                 self.notifyProgress(0, True)
                 time.sleep(0.2)
                 self.fdownInst.download(
-                    self.param_json['v'], self.headers, self.fVideo, 20, self.lenVideo, False, self.videoRecvCallback)
+                    self.param_json['v'], self.headers, self.fVideo, 10, self.lenVideo, False, self.videoRecvCallback)
         else:
             self.fdownInst.terminate()
             self.releaseFileHandler()
@@ -231,7 +232,7 @@ class BilidownObj(QObject):
     @pyqtSlot()
     def onStartDownload(self):
         self.fdownInst.download(
-            self.param_json['a'], self.headers, self.fAudio, 20, self.lenAudio, False, self.audioRecvCallback)
+            self.param_json['a'], self.headers, self.fAudio, 10, self.lenAudio, False, self.audioRecvCallback)
 
     def executeDownload(self):
         self.notifyInfo(0, "正在下载音频文件...")
@@ -260,16 +261,19 @@ class BilidownObj(QObject):
             return os.path.dirname(__file__)
         else:
             return os.path.dirname(sys.executable)
-
+        
+    def getDownloadDirectory():
+        return os.path.realpath(BilidownObj.getRootDirectory()+"/downloads")
+    
     @pyqtSlot(result=str)
     def onGetRootDirectory(self):
-        return BilidownObj.getRootDirectory()
+        return BilidownObj.getDownloadDirectory()
 
     @pyqtSlot(result=str)
     def onBrowseDirectoryClick(self):
         directory = QFileDialog.getExistingDirectory(
-            self._parent, "选择视频存放路径", BilidownObj.getRootDirectory())
-        return directory
+            self._parent, "选择视频存放路径", BilidownObj.getDownloadDirectory())
+        return os.path.realpath(directory)
 
     @pyqtSlot(str, str)
     def onDownloadClick(self, url, directory):
@@ -287,7 +291,13 @@ class BilidownObj(QObject):
         # fastdown
         self.fdownInst = FDown()
         self.lenAudio = FDown.down_len(self.param_json['a'], self.headers)
+        if(self.lenAudio==-1):
+            self.notifyInfo(1, "无法获取到音频流长度")
+            return
         self.lenVideo = FDown.down_len(self.param_json['v'], self.headers)
+        if(self.lenVideo==-1):
+            self.notifyInfo(1, "无法获取到视频流长度")
+            return
         self.filenameAudio = get_m4s_filename(self.param_json['a'])
         self.filenameVideo = get_m4s_filename(self.param_json['v'])
         self.filenameOutput = "%s.mp4" % (get_video_number(self.filenameAudio))
@@ -306,3 +316,7 @@ class BilidownObj(QObject):
     @pyqtSlot()
     def onResumeDownloadClick(self):
         pass
+
+    @pyqtSlot(bool)
+    def onDragStatusModify(self,enable):
+        self._view._dragEnable=enable
