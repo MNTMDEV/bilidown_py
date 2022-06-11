@@ -1,10 +1,10 @@
 # bilidown_py
 
-b站源视频下载轻量级python版，这将是第一个README比程序更有用、展示思想而非代码的项目。(orz)
-
 你还在苦恼b站视频素材下不了吗？你还在抱怨bilibilijj不好使吗？
 
 项目包括bilidown480.py(无Cookie低画质)、bilidown.py(需要提取资源链接)、bilidownGUI.pyw(B雷图形化多线程下载器)。
+
+此项目GUI版将不再做更新，可能以后会重构使用C++做相同的实现，还是C++给力，我摊牌了。
 
 ## 本项目优势
 
