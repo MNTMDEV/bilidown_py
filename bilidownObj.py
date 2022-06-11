@@ -285,7 +285,10 @@ class BilidownObj(QObject):
     def onBrowseDirectoryClick(self):
         directory = QFileDialog.getExistingDirectory(
             self._parent, "选择视频存放路径", BilidownObj.getDownloadDirectory())
-        return os.path.realpath(directory)
+        if directory!="":
+            return os.path.realpath(directory)
+        else:
+            return ""
 
     @pyqtSlot(str, str)
     def onDownloadClick(self, url, directory):

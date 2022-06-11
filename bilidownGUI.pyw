@@ -33,6 +33,7 @@ class BilidownGUI(QWebEngineView):
         self.initChannel()
         self.load()
         self.focusProxy().installEventFilter(self)
+        self.setContextMenuPolicy(Qt.NoContextMenu) # disable right click menu
 
     def initMousePos(self):
         self._dragEnable = True
