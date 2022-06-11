@@ -31,12 +31,12 @@ VSVersionInfo(
         '040904B0',
         [StringStruct('CompanyName', 'MNTMDEV'),
         StringStruct('FileDescription', 'Bilibili Downloader GUI'),
-        StringStruct('FileVersion', '3.1.1.1'),
+        StringStruct('FileVersion', '3.1.2.1'),
         StringStruct('InternalName', 'bilidownGUI'),
         StringStruct('LegalCopyright', '© MNTMDEV.'),
         StringStruct('OriginalFilename', 'bilidownGUI.exe'),
         StringStruct('ProductName', 'Bilibili Downloader GUI'),
-        StringStruct('ProductVersion', '3.1.1.1')])
+        StringStruct('ProductVersion', '3.1.2.1')])
       ]), 
     VarFileInfo([VarStruct('Translation', [2052, 1200])])
   ]
